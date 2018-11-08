@@ -38,7 +38,7 @@ export const startSendMessage = (text) => {
                 text,
                 createdAt: formattedTime
             }
-            return firebase.database().ref(`users/messages/${uid}/`).push(message);
+            return firebase.database().ref(`users/${uid}/messages/`).push(message);
         }
     }
 }

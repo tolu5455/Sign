@@ -1,30 +1,41 @@
 import React, { Component } from 'react';
 import '../style/Room.css'
-import { connect } from 'net';
-// import PropTypes from 'prop-types'
-// import { connect } from 'react-redux'
+import {startSendMessage} from '../action/chat'
+import { connect } from 'react-redux'
 // import { compose } from 'redux'
 // import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
 
 class Chat extends Component{
+  constructor(){
+    super()
+    this.handleSend = this.handleSend.bind(this)
+  }
+
+  handleSend = (e) => {
+    e.preventDefault();
+    var message = e.target.message.value;
+    this.props.startSendMessage(message);
+    e.target.reset();
+    
+  }
+
     render(){
-        console.log(this.props.chat);
-        
+      var messages = [];
         return (
             <div className="chat">
             <div className="chat-header clearfix">
-              <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01_green.jpg" alt="avatar" />
+              <img src={this.props.avatar} alt="avatar" style={{width: '40px'}}/>
 
               <div className="chat-about">
-                <div className="chat-with">Chat with Vincent Porter</div>
-                <div className="chat-num-messages">already 1 902 messages</div>
+                <div className="chat-with" style={{fontSize: 'bold'}}>{this.props.name}</div>
               </div>
               <i className="fa fa-star"></i>
             </div>
 
             <div className="chat-history">
               <ul>
-                <li className="clearfix">
+                {messages}
+                {/* <li className="clearfix">
                   <div className="message-data align-right">
                     <span className="message-data-time" >10:10 AM, Today</span> &nbsp; &nbsp;
                       <span className="message-data-name" >Olia</span> <i className="fa fa-circle me"></i>
@@ -42,33 +53,28 @@ class Chat extends Component{
                   <div className="message my-message">
                     Actually everything was fine. I'm very excited to show this to our team.
                     </div>
-                </li>
+                </li> */}
 
               </ul>
 
             </div>
 
-            <div className="chat-message clearfix">
-              <textarea name="message-to-send" id="message-to-send" placeholder="Type your message" rows="3"></textarea>
-
+            <form className="chat-message clearfix" onSubmit={this.handleSend}>
+              <textarea name="message" id="message-to-send" autoFocus placeholder="Type your message" rows="3"></textarea>
               <i className="fa fa-file-o"></i> &nbsp;&nbsp;&nbsp;
                 <i className="fa fa-file-image-o"></i>
 
-              <button>Send</button>
+              <button type="submit">Send</button>
 
-            </div>
+            </form>
 
           </div>
         )
     }
 }
-const mapStateToProps = state => {
-    return {
-        chat: state.data
-    }
-    
-}
 
-const mapDispatchToProps = {
-}
-export default connect(mapStateToProps, mapDispatchToProps)(Chat)
+const mapDispatchToProps = (dispatch) => ({
+  startSendMessage: (message) => dispatch(startSendMessage(message))
+})
+
+export default connect(undefined, mapDispatchToProps)(Chat)

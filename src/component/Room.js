@@ -10,15 +10,16 @@ const firebase = require("firebase")
 
 
 class Room extends Component {
-  constructor(){
-    super()
+  constructor(props){
+    super(props)
     this.handleChat = this.handleChat.bind(this)
   }
 
   handleChat(user, userObj){
-    const data = {
+    var data = {
       id: user,
-      displayName: userObj.displayName
+      name: userObj.displayName,
+      avatar: userObj.avatarUrl
     }
     this.props.startChat(data);
   }
@@ -52,10 +53,12 @@ class Room extends Component {
         userRef.set("online")
       }
     });
-    for (var user in this.props.users) {
-      if(this.props.uid.uid !== user){
-        userList.push(
-          <li className="clearfix" key={user} onClick={() => this.handleChat(user, this.props.users[user])}>
+
+    Object.keys(this.props.users).map(user => {
+        if(this.props.uid.uid !== user){
+        var temp = this.props.users[user]       
+        userList.push(         
+          <li className="clearfix" key={user} onClick={() => this.handleChat(user, temp)}>
             <img src={this.props.users[user].avatarUrl} alt="avatar" style={{ width: "40px" }} />
             <div className="about">
               <div className="name">{this.props.users[user].displayName}</div>
@@ -66,8 +69,29 @@ class Room extends Component {
           </li>
         )
       }
-        
+    })
+    
+    if(this.props.chat.data.data !== undefined){    
+      return (
+        <div>
+          <div className="container clearfix">
+            <div className="people-list" id="people-list">
+              <div className="search">
+                <input type="text" placeholder="search" />
+                <i className="fa fa-search"></i>
+              </div>
+              <ul className="list">
+                {userList}
+              </ul>
+            </div>
+            <Chat name={this.props.chat.data.data.name} 
+                  avatar={this.props.chat.data.data.avatar} 
+                  user={this.props.chat.data.data.id} />
+          </div>
+        </div>
+      )
     }
+
     return (
       <div>
         <div className="container clearfix">
@@ -83,7 +107,6 @@ class Room extends Component {
           <Chat />
         </div>
       </div>
-
     )
   }
 }
@@ -96,6 +119,7 @@ const mapStateToProps = state => {
   return {
     uid: state.firebase.auth,
     users: state.firebase.data.users,
+    chat: state.chat
   }
 }
 

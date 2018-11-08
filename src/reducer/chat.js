@@ -1,11 +1,16 @@
-const chatReducer = (state = [], action) => {
+const initialState = {
+    data: {},
+    message: {}
+}
+
+const chatReducer = (state = initialState, action) => {
     switch(action.type){
         case 'SEND_USER':
             return{...state,
                 data: action.data
             }
         case 'SEND_MESSAGE':
-            return{
+            return{...state,
                 message: [action.message]
             }
         default:
